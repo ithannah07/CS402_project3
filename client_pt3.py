@@ -1,4 +1,4 @@
-"""TLS 1.3 client with mutual TLS."""
+"""TLS 1.3 client for Part 3."""
 
 import datetime
 import json
@@ -30,6 +30,8 @@ def log_json(event, **fields):
     )
 
 
+# Trust the CA for server verification and present the client certificate
+# so the server can authenticate this client.
 context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
 context.load_verify_locations(cafile=str(BASE_DIR / "ca.crt"))
 context.load_cert_chain(
@@ -39,10 +41,12 @@ context.load_cert_chain(
 context.minimum_version = ssl.TLSVersion.TLSv1_3
 
 with socket.create_connection((HOST, PORT)) as sock:
+    # Wrap the TCP socket with TLS and verify the server as localhost.
     with context.wrap_socket(sock, server_hostname="localhost") as tls_sock:
         peer_cert = tls_sock.getpeercert()
         cipher_info = tls_sock.cipher()
         host, port = tls_sock.getpeername()
+        # Log the negotiated TLS session after server verification succeeds.
         log_json(
             "tls_handshake_succeeded",
             peer={"host": host, "port": port},
@@ -51,8 +55,10 @@ with socket.create_connection((HOST, PORT)) as sock:
             peer_subject=peer_cert.get("subject"),
         )
 
+        # Send one JSON request to the server.
         request = {"command": "GET_TIME"}
         tls_sock.sendall(json.dumps(request).encode())
 
+        # Receive the server's JSON response and log it.
         response = json.loads(tls_sock.recv(4096).decode())
         log_json("server_response_received", response=response)
