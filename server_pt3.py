@@ -1,3 +1,5 @@
+"""Secure TLS Server for part 3"""
+
 import socket
 import ssl
 import json
@@ -43,5 +45,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as sock:
             response = {"time": datetime.datetime.now(datetime.timezone.utc).isoformat()}
         else:
             response = {"error": "Unknown command"}
-
-        TLS_secure_conn.sendall(json.dumps(response).encode())  # Send response
+            
+        # Send response
+        TLS_secure_conn.sendall(json.dumps(response).encode())
+        
+        

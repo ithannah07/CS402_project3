@@ -19,7 +19,8 @@ with socket.create_connection((HOST, PORT)) as sock:
     with context.wrap_socket(sock, server_hostname="localhost") as TLS_secure_sock:
         print("TLS version:", TLS_secure_sock.version())
         print("Cipher suite:", TLS_secure_sock.cipher())
-
+        
+        # Send request and receive response
         request = {"command": "GET_TIME"}
 
         # Communicate with the server over TLS

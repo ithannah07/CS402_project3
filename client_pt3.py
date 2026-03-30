@@ -1,3 +1,5 @@
+"""Secure TLS Client for part 3"""
+
 import socket
 import ssl
 import json
@@ -27,6 +29,8 @@ with socket.create_connection((HOST, PORT)) as sock:
 
         # Send request and receive response
         request = {"command": "GET_TIME"}
+        
+        # Communicate with the server over TLS
         TLS_secure_sock.sendall(json.dumps(request).encode())
 
         response = TLS_secure_sock.recv(4096)

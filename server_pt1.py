@@ -37,5 +37,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as sock:
                 datetime.timezone.utc).isoformat()}
         else:
             response = {"error": "Unknown command"}
-
+            
+        # Send response
         TLS_secure_conn.sendall(json.dumps(response).encode())
