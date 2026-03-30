@@ -1,3 +1,5 @@
+""" Secure TLS Server for part 1"""
+
 import socket
 import ssl
 import json
@@ -7,7 +9,10 @@ import logging
 HOST = "127.0.0.1"
 PORT = 8443
 
+# Create a TLS context for the server
 context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+
+# Load the server's certificate and private key for authentication
 context.load_cert_chain(certfile="server.crt", keyfile="server.key")
 
 # Bind TCP Socket
@@ -19,10 +24,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as sock:
     conn, addr = sock.accept()
     print("Connection from", addr)
 
+    # Wrap the TCP connection with TLS to establish a secure encrypted channel
     with context.wrap_socket(conn, server_side=True) as TLS_secure_conn:
         print("TLS version:", TLS_secure_conn.version())
-        print("Cipher suite:", TLS_secure_conn.cipher()
-              )
+        print("Cipher suite:", TLS_secure_conn.cipher())
     
         data = TLS_secure_conn.recv(4096)
         request = json.loads(data.decode())
